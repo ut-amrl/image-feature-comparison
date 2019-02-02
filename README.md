@@ -3,7 +3,7 @@ A tool for comparing image feature tracking algorithms performance.
 
 # Usage
 
-Compile the program using cmake and make and then run using the following commands:
+Compile the program using cmake and make and edit the parameters at the top of histogram.py to fit your needs. Most importantly change the ```input_path``` variable to your folder of images to test on, then run using the following commands:
 
 ```./histogram.py <output_directory> regen```
 
