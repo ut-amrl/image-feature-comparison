@@ -33,3 +33,4 @@ Use your package manager, for ubuntu use:
 Clone opencv3 and opencv_contrib, and run cmake for opencv3 using the following command in the build directory.
 
 ```cmake -DOPENCV_EXTRA_MODULES_PATH=<opencv_contrib>/modules -DOPENCV_ENABLE_NONFREE=ON ..```
+
