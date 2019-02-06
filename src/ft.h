@@ -41,6 +41,7 @@ public:
   void AddImage(const String &filename);
 private:
   Ptr<cv::Feature2D> feature_finder;
+  Ptr<cv::FastFeatureDetector> keypoint_finder;
   long frame_num_;
   std::string detector_;
   bool bayered_;

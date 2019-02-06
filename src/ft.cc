@@ -55,6 +55,10 @@ FeatureTracker::FeatureTracker(double inlier_threshold,
     } else if (detector_.compare("sift") == 0) {
       feature_finder = cv::xfeatures2d::SIFT::create();
       matcher_params_ = cv::NORM_L2;
+    } else if (detector_.compare("freak") == 0) {
+      feature_finder = cv::xfeatures2d::FREAK::create(false, true, 40.0f, 20);
+      keypoint_finder = cv::FastFeatureDetector::create(10, true);
+      matcher_params_ = cv::NORM_HAMMING;
     } else {
       std::cerr << "Unrecognized Detector Option" << std::endl;
       exit(1);
@@ -75,7 +79,12 @@ void FeatureTracker::AddImage(const String &filename) {
   //Get the feature keypoints and descriptors
   cv::Mat new_descs;
   std::vector<cv::KeyPoint> new_keypoints;
-  feature_finder->detectAndCompute(new_image, cv::noArray(), new_keypoints, new_descs);
+  if(detector_.compare("freak") == 0) {
+    keypoint_finder->detect(new_image, new_keypoints);
+    feature_finder->compute(new_image, new_keypoints, new_descs);
+  } else {
+    feature_finder->detectAndCompute(new_image, cv::noArray(), new_keypoints, new_descs);
+  }
   //If not the first image
   if (!last_image_descs_.empty()) {
     //Find non-ambigious matches between the last image and the new one.
