@@ -35,8 +35,12 @@ apt-get install python-tk
 
 Clone opencv and opencv_contrib:
 
-```git clone https://github.com/opencv/opencv.git```
-```git clone https://github.com/opencv/opencv_contrib.git```
+```
+git clone https://github.com/opencv/opencv.git
+```
+``
+git clone https://github.com/opencv/opencv_contrib.git
+```
 
 Grab the opencv dependencies, listed here:
 
@@ -107,8 +111,14 @@ output_base  # Default path to output the graph and test results, this is a fold
 
 To generate the graph:
 
-```./histogram.py <output_directory> regen```
+```
+./histogram.py <output_directory> regen
+```
 
 The 'regen' argument tells the script to generate all the data for the graph, if left out the program will attempt to just make the graph from the provided data and will fail. Afterwards you can just run:
 
-```./histogram.py <output_directory>```
+```
+./histogram.py <output_directory>
+```
+
+For an additional example please read [examples/README.md](https://github.com/umass-amrl/image-feature-comparison/tree/master/examples).
