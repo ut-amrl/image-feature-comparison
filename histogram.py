@@ -9,7 +9,7 @@ import sys
 ##### User set variables #####
 
 input_path = ""
-bayered = ""; 
+bayered = "false"
 best_percent = "0.3"
 output_base = ""
 ft_exec_path = "./build/feature_tracker.out"
@@ -24,6 +24,8 @@ colors = ['b', 'r', 'g', 'm', 'k']
 #Run each algorithm separately, in its own thread 
 def ft_thread(detector, output_path):
     print("Running %s" % (detector))
+    if input_path[-1] != '/':
+        input_path += '/'
     subprocess.run([ft_exec_path, "--input=%s" % (input_path), "--draw=false","--bayered=%s" % (bayered), "--output=%s" % (output_path), "--best_percent=%s" % (best_percent), "--detector=%s" % (detector)])
     print("Finished %s" % (detector))
 
