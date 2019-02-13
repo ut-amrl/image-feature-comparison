@@ -19,7 +19,7 @@ ft_exec_path = "./build/feature_tracker.out"
 # Algorithms to test
 detectors = ["AKAZE", "BRISK", "ORB", "SIFT", "SURF", "FREAK"]
 # Colors for each algorithm
-colors = ['b', 'r', 'g', 'm', 'k']
+colors = ['b', 'r', 'g', 'm', 'k', 'c']
 
 #Run each algorithm separately, in its own thread 
 def ft_thread(detector, output_path):
