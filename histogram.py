@@ -17,7 +17,7 @@ ft_exec_path = "./build/feature_tracker.out"
 ##### End user variables #####
 
 # Algorithms to test
-detectors = ["AKAZE", "BRISK", "ORB", "SIFT", "SURF"]
+detectors = ["AKAZE", "BRISK", "ORB", "SIFT", "SURF", "FREAK"]
 # Colors for each algorithm
 colors = ['b', 'r', 'g', 'm', 'k']
 
