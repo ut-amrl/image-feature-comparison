@@ -77,7 +77,7 @@ for detector, color in zip(detectors, colors):
       data_sum_curr -= vals[i]
     #Plot this line and make it colorful
     line2 = plt.plot(vals, data, label=detector)
-    plt.setp(line2, color=color, linestyle='--')
+    plt.setp(line2, color=color, linestyle='-')
     #Add a legend entry for this algorithm
     legend_handles.append(mpatches.Patch(color=color, label=detector))
 
