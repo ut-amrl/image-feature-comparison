@@ -23,6 +23,7 @@ colors = ['b', 'r', 'g', 'm', 'k', 'c']
 
 #Run each algorithm separately, in its own thread 
 def ft_thread(detector, output_path):
+    global input_path
     print("Running %s" % (detector))
     if input_path[-1] != '/':
         input_path += '/'
