@@ -82,12 +82,12 @@ for detector, color in zip(detectors, colors):
     legend_handles.append(mpatches.Patch(color=color, label=detector))
 
 #Set the title to the output_path, but beautified a bit
-output_base = output_base.split('/')
-while '' in output_base:
-    output_base.remove('')
-output_base = output_base[-1].replace("_", " ")
+output_title = output_base.split('/')
+while '' in output_title:
+    output_title.remove('')
+output_title = output_title[-1].replace("_", " ")
 #Format the graph and then show/output it
-plt.suptitle(output_base)
+plt.suptitle(output_title)
 plt.xlabel('Feature Track Length')
 plt.ylabel('% At-Least')
 plt.legend(handles=legend_handles)
