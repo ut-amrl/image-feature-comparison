@@ -8,11 +8,11 @@ import sys
 
 ##### User set variables #####
 
-input_path = ""
+input_path = "test_images/"
 bayered = "false"
 best_percent = "0.3"
 output_base = ""
-ft_exec_path = "./build/feature_tracker.out"
+ft_exec_path = "./feature_tracker.out"
 
 ##### End user variables #####
 
