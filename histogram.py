@@ -8,11 +8,11 @@ import sys
 
 ##### User set variables #####
 
-input_path = "test_images/"
+input_path = "data/jackal/"
 bayered = "false"
 best_percent = "0.3"
 output_base = ""
-ft_exec_path = "./feature_tracker.out"
+ft_exec_path = "./bin/feature_tracker"
 
 ##### End user variables #####
 
@@ -21,7 +21,7 @@ detectors = ["AKAZE", "BRISK", "ORB", "SIFT", "SURF", "FREAK"]
 # Colors for each algorithm
 colors = ['b', 'r', 'g', 'm', 'k', 'c']
 
-#Run each algorithm separately, in its own thread 
+#Run each algorithm separately, in its own thread
 def ft_thread(detector, output_path):
     global input_path
     print("Running %s" % (detector))
@@ -31,7 +31,7 @@ def ft_thread(detector, output_path):
     print("Finished %s" % (detector))
 
 #Generate the data by spawning a bunch of threads,
-#each pointing to its own output path inside the 
+#each pointing to its own output path inside the
 #specified folder.
 def regen():
   subprocess.run(["mkdir", output_base])
@@ -41,7 +41,7 @@ def regen():
       t = threading.Thread(target=ft_thread, args=(detector, output_path))
       t.start()
       threads.append(t)
-      
+
   for t in threads:
       t.join()
 
@@ -56,7 +56,7 @@ if len(sys.argv) > 2 and sys.argv[2] == "regen":
     regen()
 else:
     print("Not regenerating data!")
-   
+
 #Create a large plot
 plt.figure(figsize=(8,4))
 legend_handles = []
