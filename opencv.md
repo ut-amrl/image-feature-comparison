@@ -15,8 +15,7 @@
     ```
 1. Run cmake for opencv3 using the following command in the build directory.
     ```bash
-    cmake -DOPENCV_EXTRA_MODULES_PATH=<path_to_opencv_contrib>/modules \
-        -DOPENCV_ENABLE_NONFREE=ON ..
+    cmake -DOPENCV_EXTRA_MODULES_PATH=<path_to_opencv_contrib>/modules -DOPENCV_ENABLE_NONFREE=ON ..
     ```
 1. Run make and make install
     ```bash
