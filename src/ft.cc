@@ -95,22 +95,22 @@ void FeatureTracker::AddImage(const String &filename) {
     cv::cvtColor(new_image, new_image, cv::COLOR_BGR2GRAY);
   }
   // Get the feature keypoints and descriptors.
-  cv::Mat new_descs;
+  cv::Mat new_descriptors;
   std::vector<cv::KeyPoint> new_keypoints;
   if (detector_.compare("freak") == 0) {
     keypoint_finder->detect(new_image, new_keypoints);
-    feature_finder->compute(new_image, new_keypoints, new_descs);
+    feature_finder->compute(new_image, new_keypoints, new_descriptors);
   } else {
     feature_finder->detectAndCompute(
-        new_image, cv::noArray(), new_keypoints, new_descs);
+        new_image, cv::noArray(), new_keypoints, new_descriptors);
   }
   // If not the first image...
-  if (!last_image_descs_.empty()) {
+  if (!old_descriptors_.empty()) {
     // Find non-ambigious matches between the last image and the new one.
     // "query" == last image
     // "train" == current image
     std::vector<DMatch> matches =
-        MatchFeatureDescs(last_image_descs_, new_descs);
+        MatchFeatureDescs(old_descriptors_, new_descriptors);
      // Add the best new matches to our map.
     unordered_map<int, Match> new_matches;
     for (auto match : matches) {
@@ -134,10 +134,18 @@ void FeatureTracker::AddImage(const String &filename) {
           }
         }
       }
-      if (draw_) {
-        std::cout << "Max Age: " << max_age << std::endl;
+      int mean_age = 0;
+      for (const auto& match : new_matches) {
+        mean_age += match.second.frame_age_;
       }
-     }
+      if (mean_age > 0) {
+        mean_age = mean_age / new_matches.size();
+      }
+      if (draw_) {
+        std::cout << "Max Age: " << max_age
+                  << " Mean: " << mean_age << std::endl;
+      }
+    }
     // For all the matches that are ending write them to the output file.
     WriteEndingMatches();
     old_matches_ = new_matches;
@@ -180,7 +188,7 @@ void FeatureTracker::AddImage(const String &filename) {
     }
   }
   last_image_ = new_image;
-  last_image_descs_ = new_descs;
+  old_descriptors_ = new_descriptors;
   old_keypoints_ = new_keypoints;
   frame_num_++;
 }
@@ -191,8 +199,8 @@ std::vector<DMatch> FeatureTracker::MatchFeatureDescs(
   // Brute force matching between the descriptor sets (find the best 2 matches).
   cv::BFMatcher matcher(matcher_params_);
   vector<vector<DMatch>> nn_matches;
-  // "query" == from descs_1
-  // "train" == from descs_2
+  // "query" == from descs_1 (old image)
+  // "train" == from descs_2 (new image)
   matcher.knnMatch(descs_1, descs_2, nn_matches, 2);
   // Only take the matches that are non-ambigious (i.e. one distance is match
   // ratio larger than the other).
@@ -202,14 +210,16 @@ std::vector<DMatch> FeatureTracker::MatchFeatureDescs(
     float dist1 = nn_matches[i][0].distance;
     float dist2 = nn_matches[i][1].distance;
     if (dist1 < nn_match_ratio_ * dist2) {
+      // Add non-ambiguous matches.
       best_matches.push_back(first);
     } else {
+      // Also add matches if either of the top two matches was there in
+      // the previous frame.
       auto result_0 = old_matches_.find(nn_matches[i][0].queryIdx);
       auto result_1 = old_matches_.find(nn_matches[i][1].queryIdx);
       if (!old_matches_.empty() && result_0 != old_matches_.end()) {
         best_matches.push_back(nn_matches[i][0]);
-      } else if (!old_matches_.empty() && result_1 !=
-                      old_matches_.end()) {
+      } else if (!old_matches_.empty() && result_1 != old_matches_.end()) {
         best_matches.push_back(nn_matches[i][1]);
       }
     }

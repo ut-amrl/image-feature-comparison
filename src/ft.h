@@ -17,12 +17,14 @@ class Match {
   int frame_age_;
   cv::Point last_image_point_;
   cv::Point image_point_;
-  bool last_frame_ = true;
+  bool last_frame_;
   Match(int frame_age,
         cv::Point last_image_point,
-        cv::Point image_point) : frame_age_(frame_age),
-                             last_image_point_(last_image_point),
-                             image_point_(image_point) {}
+        cv::Point image_point) :
+      frame_age_(frame_age),
+      last_image_point_(last_image_point),
+      image_point_(image_point),
+      last_frame_(true) {}
 };
 
 class FeatureTracker {
@@ -44,7 +46,7 @@ class FeatureTracker {
   bool bayered_;
   bool draw_;
   cv::Mat last_image_;
-  cv::Mat last_image_descs_;
+  cv::Mat old_descriptors_;
   cv::NormTypes matcher_params_;
   std::ofstream o_file_;
   std::vector<cv::KeyPoint> old_keypoints_;
