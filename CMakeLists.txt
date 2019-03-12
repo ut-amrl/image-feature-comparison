@@ -1,10 +1,17 @@
-cmake_minimum_required(VERSION 2.8)
-set(CMAKE_CXX_STANDARD 11)
-set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -Wall -g")
-project(feature_tracker.out)
-find_package(gflags REQUIRED)
-find_package(OpenCV REQUIRED)
-include_directories(${OpenCV_INCLUDE_DIRS})
-add_executable(feature_tracker.out src/main.cc src/ft.cc)
-SET(libs gflags)
-target_link_libraries(feature_tracker.out ${OpenCV_LIBS} ${libs} opencv_xfeatures2d)
+PROJECT(feature_tracker)
+
+CMAKE_MINIMUM_REQUIRED(VERSION 2.8)
+
+SET(CMAKE_CXX_STANDARD 11)
+SET(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -Wall -g")
+
+SET(EXECUTABLE_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/bin)
+SET(LIBRARY_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/lib)
+
+FIND_PACKAGE(gflags REQUIRED)
+FIND_PACKAGE(OpenCV REQUIRED)
+INCLUDE_DIRECTORIES(${OpenCV_INCLUDE_DIRS})
+
+ADD_EXECUTABLE(feature_tracker src/main.cc src/ft.cc)
+TARGET_LINK_LIBRARIES(feature_tracker
+                      ${OpenCV_LIBS} gflags opencv_xfeatures2d)
