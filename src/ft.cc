@@ -130,18 +130,18 @@ void FeatureTracker::AddImage(const String &filename) {
         for (std::pair<int, Match> match_pair : new_matches) {
           if(match_pair.second.frame_age_ > 2) {
             cv::circle(new_image,
-                      match_pair.second.last_image_point_,
-                      2,
-                      CV_RGB(0, 0, 255));
+                       match_pair.second.last_image_point_,
+                       2,
+                       CV_RGB(0, 0, 255));
             cv::addText(new_image,
-                    std::to_string(match_pair.second.frame_age_),
-                    match_pair.second.image_point_,
-                    "Times");
+                        std::to_string(match_pair.second.frame_age_),
+                        match_pair.second.image_point_,
+                        "Times");
             cv::line(new_image,
-                    match_pair.second.last_image_point_,
-                    match_pair.second.image_point_,
-                    CV_RGB(255, 0, 0),
-                    2);
+                     match_pair.second.last_image_point_,
+                     match_pair.second.image_point_,
+                     CV_RGB(255, 0, 0),
+                     2);
           }
         }
       }

@@ -21,23 +21,23 @@ public:
   Point last_image_point_;
   Point image_point_;
   bool last_frame_ = true;
-  Match(int frame_age, 
-	Point last_image_point, 
-	Point image_point) : frame_age_(frame_age),
-			     last_image_point_(last_image_point),
-			     image_point_(image_point) {}
+  Match(int frame_age,
+        Point last_image_point,
+        Point image_point) : frame_age_(frame_age),
+                             last_image_point_(last_image_point),
+                             image_point_(image_point) {}
 };
 
 class FeatureTracker {
 public:
-  FeatureTracker(double inlier_threshold, 
-		 double nn_match_ratio, 
-		 double best_percent_, 
-		 const std::string &detector,
-		 bool draw,
-		 bool bayered,
-		 const string& o_file
-		);
+  FeatureTracker(double inlier_threshold,
+                 double nn_match_ratio,
+                 double best_percent_,
+                 const std::string &detector,
+                 bool draw,
+                 bool bayered,
+                 const string& o_file
+                );
   void AddImage(const String &filename);
 private:
   Ptr<cv::Feature2D> feature_finder;
@@ -53,8 +53,8 @@ private:
   std::vector<KeyPoint> last_image_points_;
   std::unordered_map<int, Match> last_image_matchs_;
   double inlier_threshold_, nn_match_ratio_, best_percent_;
-  std::vector<DMatch> MatchFeatureDescs(const cv::Mat &descs_1, 
-					const cv::Mat &descs_2);
+  std::vector<DMatch> MatchFeatureDescs(const cv::Mat &descs_1,
+                                        const cv::Mat &descs_2);
   void WriteEndingMatches();
 };
 

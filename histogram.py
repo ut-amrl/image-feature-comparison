@@ -9,7 +9,7 @@ import sys
 ##### User set variables #####
 
 input_path = "data/jackal/"
-bayered = "false"
+bayered = "true"
 best_percent = "0.3"
 output_base = ""
 ft_exec_path = "./bin/feature_tracker"
@@ -34,7 +34,7 @@ def ft_thread(detector, output_path):
 #each pointing to its own output path inside the
 #specified folder.
 def regen():
-  subprocess.run(["mkdir", output_base])
+  subprocess.run(["mkdir", "-p", output_base])
   threads = []
   for detector in detectors:
       output_path = "%s/output.%s" % (output_base, detector)
