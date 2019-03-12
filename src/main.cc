@@ -63,10 +63,16 @@ int main(int argc, char** argv) {
     stringstream path;
     vector<string> images_to_process;
     while ((dentry = readdir(dir)) != NULL) {
-        if (strstr(dentry->d_name, ".jpg") != NULL) {
+        if (strstr(dentry->d_name, ".jpg") != NULL ||
+            strstr(dentry->d_name, ".png") != NULL ||
+            strstr(dentry->d_name, ".ppm") != NULL) {
             path << FLAGS_input << String(dentry->d_name);
             images_to_process.push_back(path.str());
             path.str(string());
+        } else {
+          std::cerr << "Ignoring unsupported file \""
+                    << dentry->d_name
+                    << "\"" << std::endl;
         }
     }
     closedir(dir);
@@ -75,7 +81,7 @@ int main(int argc, char** argv) {
     }
     std::sort(images_to_process.begin(), images_to_process.end(), alphabetical);
     for (auto image_name : images_to_process) {
-        feature_tracker.AddImage(image_name);
+      feature_tracker.AddImage(image_name);
       if (FLAGS_draw &&
           !cv::getWindowProperty("Display", cv::WND_PROP_VISIBLE)) {
         break;
