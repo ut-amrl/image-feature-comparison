@@ -4,7 +4,7 @@
 #include <string>
 #include <fstream>
 
-#include <gflags/gflags.h>
+#include "gflags/gflags.h"
 
 #include "ft.h"
 
@@ -20,12 +20,16 @@ DEFINE_double(best_percent,
               0.05f,
               "The best percent of matches to keep track of.");
 DEFINE_string(output, "", "Output file to put matches into.");
+DEFINE_string(tracks, "", "Output file to put feature tracks into.");
 DEFINE_string(detector,
               "akaze",
               "Detector used on images for keypoint and descriptor"
               "extraction (AKAZE, BRISK, ORB, SIFT, SURF)");
 DEFINE_bool(bayered, false, "Is the image bayered?");
 DEFINE_bool(draw, true, "Should we be displaying all this stuff?");
+DEFINE_int32(min_track_length,
+             5,
+             "Minimum length a track should have, to save it.");
 
 using cv::String;
 using std::string;
@@ -50,14 +54,17 @@ int main(int argc, char** argv) {
         std::cerr << "Invalid Folder Input" << std::endl;
         exit(1);
     }
-    std::string o_filename = ((FLAGS_output == "")? "/dev/null" : FLAGS_output);
+    string o_filename = ((FLAGS_output == "")? "/dev/null" : FLAGS_output);
+    string tracks_file = ((FLAGS_tracks == "")? "/dev/null" : FLAGS_tracks);
     FeatureTracker feature_tracker(FLAGS_inlier_threshold,
                                    FLAGS_nn_match_ratio,
                                    FLAGS_best_percent,
+                                   FLAGS_min_track_length,
                                    FLAGS_detector,
                                    FLAGS_draw,
                                    FLAGS_bayered,
-                                   o_filename);
+                                   o_filename,
+                                   tracks_file);
     DIR* dir = opendir(FLAGS_input.c_str());
     struct dirent* dentry = nullptr;
     stringstream path;

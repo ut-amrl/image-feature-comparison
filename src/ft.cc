@@ -30,57 +30,64 @@ using std::pair;
 FeatureTracker::FeatureTracker(double inlier_threshold,
                                double nn_match_ratio,
                                double best_percent,
+                               int min_track_length,
                                const std::string &detector,
                                bool draw,
                                bool bayered,
-                               const string& o_filename) {
-    inlier_threshold_ = inlier_threshold;
-    nn_match_ratio_ = nn_match_ratio;
-    best_percent_ = best_percent;
-    frame_num_ = 0;
-    bayered_ = bayered;
-    draw_ = draw;
-    o_file_.open(o_filename);
-    if (!o_file_.is_open()) {
-      std::cerr << "Could not open: " << o_filename << std::endl;
-      exit(1);
-    }
-    detector_ = detector;
-    // Convert detector to lower case and find matching feature tracker.
-    for (uint i = 0; i < detector.length(); i++) {
-      detector_[i] = std::tolower(detector_[i]);
-    }
-    if (detector_.compare("akaze") == 0) {
-      feature_finder = cv::AKAZE::create(
-          cv::AKAZE::DESCRIPTOR_MLDB,
-          0,
-          3,
-          0.0001f,
-          10,
-          5,
-          cv::KAZE::DIFF_PM_G2);
-      matcher_params_ = cv::NORM_HAMMING;
-    } else if (detector_.compare("orb") == 0) {
-      feature_finder = cv::ORB::create(
-          10000, 1.04f, 50, 31, 0, 2, cv::ORB::HARRIS_SCORE, 31, 20);
-      matcher_params_ = cv::NORM_HAMMING;
-    } else if (detector_.compare("brisk") == 0) {
-      feature_finder = cv::BRISK::create(20, 7, 1.1f);
-      matcher_params_ = cv::NORM_HAMMING;
-    } else if (detector_.compare("surf") == 0) {
-      feature_finder = cv::xfeatures2d::SURF::create();
-      matcher_params_ = cv::NORM_L2;
-    } else if (detector_.compare("sift") == 0) {
-      feature_finder = cv::xfeatures2d::SIFT::create();
-      matcher_params_ = cv::NORM_L2;
-    } else if (detector_.compare("freak") == 0) {
-      feature_finder = cv::xfeatures2d::FREAK::create(false, true, 40.0f, 20);
-      keypoint_finder = cv::FastFeatureDetector::create(10, true);
-      matcher_params_ = cv::NORM_HAMMING;
-    } else {
-      std::cerr << "Unrecognized Detector Option" << std::endl;
-      exit(1);
-    }
+                               const string& o_filename,
+                               const string& tracks_file) {
+  min_track_length_ = min_track_length;
+  inlier_threshold_ = inlier_threshold;
+  nn_match_ratio_ = nn_match_ratio;
+  best_percent_ = best_percent;
+  frame_num_ = 0;
+  bayered_ = bayered;
+  draw_ = draw;
+  o_file_.open(o_filename);
+  if (!o_file_.is_open()) {
+    std::cerr << "Could not open: " << o_filename << std::endl;
+    exit(1);
+  }
+  tracks_file_.open(tracks_file);
+  if (!tracks_file_.is_open()) {
+    std::cerr << "Could not open track file: " << o_filename << std::endl;
+  }
+  detector_ = detector;
+  // Convert detector to lower case and find matching feature tracker.
+  for (uint i = 0; i < detector.length(); i++) {
+    detector_[i] = std::tolower(detector_[i]);
+  }
+  if (detector_.compare("akaze") == 0) {
+    feature_finder = cv::AKAZE::create(
+        cv::AKAZE::DESCRIPTOR_MLDB,
+        0,
+        3,
+        0.0001f,
+        10,
+        5,
+        cv::KAZE::DIFF_PM_G2);
+    matcher_params_ = cv::NORM_HAMMING;
+  } else if (detector_.compare("orb") == 0) {
+    feature_finder = cv::ORB::create(
+        10000, 1.04f, 50, 31, 0, 2, cv::ORB::HARRIS_SCORE, 31, 20);
+    matcher_params_ = cv::NORM_HAMMING;
+  } else if (detector_.compare("brisk") == 0) {
+    feature_finder = cv::BRISK::create(20, 7, 1.1f);
+    matcher_params_ = cv::NORM_HAMMING;
+  } else if (detector_.compare("surf") == 0) {
+    feature_finder = cv::xfeatures2d::SURF::create();
+    matcher_params_ = cv::NORM_L2;
+  } else if (detector_.compare("sift") == 0) {
+    feature_finder = cv::xfeatures2d::SIFT::create();
+    matcher_params_ = cv::NORM_L2;
+  } else if (detector_.compare("freak") == 0) {
+    feature_finder = cv::xfeatures2d::FREAK::create(false, true, 40.0f, 20);
+    keypoint_finder = cv::FastFeatureDetector::create(10, true);
+    matcher_params_ = cv::NORM_HAMMING;
+  } else {
+    std::cerr << "Unrecognized Detector Option" << std::endl;
+    exit(1);
+  }
 }
 
 void FeatureTracker::AddImage(const String &filename) {
@@ -116,7 +123,8 @@ void FeatureTracker::AddImage(const String &filename) {
     for (auto match : matches) {
       const Match new_match(2,
                             old_keypoints_[match.queryIdx].pt,
-                            new_keypoints[match.trainIdx].pt);
+                            new_keypoints[match.trainIdx].pt ,
+                            frame_num_);
       new_matches.insert({ match.trainIdx, new_match});
     }
     // Do any of these matches appear in the last image matches?
@@ -126,11 +134,15 @@ void FeatureTracker::AddImage(const String &filename) {
         auto last_image_match = old_matches_.find(match.queryIdx);
         if (last_image_match != old_matches_.end()) {
           // Match exists in the last file, copy its age value.
-          new_matches.at(match.trainIdx).frame_age_ =
-              last_image_match->second.frame_age_ + 1;
+          Match& new_match = new_matches.at(match.trainIdx);
+          new_match.frame_age_ = last_image_match->second.frame_age_ + 1;
           last_image_match->second.last_frame_ = false;
-          if (new_matches.at(match.trainIdx).frame_age_ > max_age) {
-            max_age = new_matches.at(match.trainIdx).frame_age_;
+          new_match.track_history_.insert(
+              new_match.track_history_.begin(),
+              last_image_match->second.track_history_.begin(),
+              last_image_match->second.track_history_.end());
+          if (new_match.frame_age_ > max_age) {
+              max_age = new_match.frame_age_;
           }
         }
       }
@@ -148,6 +160,7 @@ void FeatureTracker::AddImage(const String &filename) {
     }
     // For all the matches that are ending write them to the output file.
     WriteEndingMatches();
+    WriteFeatureTracks();
     old_matches_ = new_matches;
     if (draw_) {
       if (false) {
@@ -235,6 +248,20 @@ void FeatureTracker::WriteEndingMatches() {
   for (std::pair<int, Match> match_pair : old_matches_) {
     if (match_pair.second.last_frame_) {
       o_file_ << match_pair.second.frame_age_ << std::endl;
+    }
+  }
+}
+
+void FeatureTracker::WriteFeatureTracks() {
+  for (std::pair<int, Match> match_pair : old_matches_) {
+    if (match_pair.second.last_frame_) {
+      if (match_pair.second.track_history_.size() < min_track_length_) continue;
+      for (const pair<int, Point>& p : match_pair.second.track_history_) {
+        tracks_file_ << p.first << ","
+                     << p.second.x << ","
+                     << p.second.y << ", ";
+      }
+      tracks_file_ << std::endl;
     }
   }
 }
