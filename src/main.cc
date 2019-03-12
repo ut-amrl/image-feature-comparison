@@ -9,24 +9,37 @@
 #include "ft.h"
 
 DEFINE_string(input, "", "Folder name to process all the img*.ppm in.");
-DEFINE_double(inlier_threshold, 0.1f, "Distance Threshold for post-fundamental transformation check.");
-DEFINE_double(nn_match_ratio, 0.8f, "Nearest Neighbor Matching Ratio to decide if a match is ambigious or not.");
-DEFINE_double(best_percent, 0.05f, "The best percent of matches to keep track of.");
+DEFINE_double(inlier_threshold,
+              0.1f,
+              "Distance Threshold for post-fundamental transformation check.");
+DEFINE_double(nn_match_ratio,
+              0.8f,
+              "Nearest Neighbor Matching Ratio to decide if a match is "
+              "ambigious or not.");
+DEFINE_double(best_percent,
+              0.05f,
+              "The best percent of matches to keep track of.");
 DEFINE_string(output, "", "Output file to put matches into.");
-DEFINE_string(detector, "akaze", "Detector used on images for keypoint and descriptor extraction (AKAZE, BRISK, ORB, SIFT, SURF)");
+DEFINE_string(detector,
+              "akaze",
+              "Detector used on images for keypoint and descriptor"
+              "extraction (AKAZE, BRISK, ORB, SIFT, SURF)");
 DEFINE_bool(bayered, false, "Is the image bayered?");
 DEFINE_bool(draw, true, "Should we be displaying all this stuff?");
 
-using namespace cv;
-using namespace std;
+using cv::String;
+using std::string;
+using std::stringstream;
+using std::vector;
 
 bool alphabetical(string one, string two) {
     auto cone = one.c_str();
     auto ctwo = two.c_str();
     int shortestLen = one.length() < two.length()? one.length(): two.length();
-    for(int32_t i = 0; i < shortestLen; i++) {
-        if(cone[i] != ctwo[i])
+    for (int32_t i = 0; i < shortestLen; i++) {
+        if (cone[i] != ctwo[i]) {
             return cone[i] < ctwo[i];
+        }
     }
     return one.length() < two.length();
 }
@@ -61,7 +74,7 @@ int main(int argc, char** argv) {
       cv::namedWindow("Display");
     }
     std::sort(images_to_process.begin(), images_to_process.end(), alphabetical);
-    for (auto image_name: images_to_process) {
+    for (auto image_name : images_to_process) {
         feature_tracker.AddImage(image_name);
       if (FLAGS_draw &&
           !cv::getWindowProperty("Display", cv::WND_PROP_VISIBLE)) {
