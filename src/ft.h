@@ -50,6 +50,7 @@ class FeatureTracker {
   cv::NormTypes matcher_params_;
   std::ofstream o_file_;
   std::vector<cv::KeyPoint> old_keypoints_;
+  // Lookup for matches. Key: descriptor index from old image, value: Match.
   std::unordered_map<int, Match> old_matches_;
   double inlier_threshold_, nn_match_ratio_, best_percent_;
   std::vector<cv::DMatch> MatchFeatureDescs(const cv::Mat &descs_1,
