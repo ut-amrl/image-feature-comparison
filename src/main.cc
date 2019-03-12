@@ -38,13 +38,13 @@ int main(int argc, char** argv) {
         exit(1);
     }
     std::string o_filename = ((FLAGS_output == "")? "/dev/null" : FLAGS_output);
-    FeatureTracker feature_tracker = FeatureTracker(FLAGS_inlier_threshold,
-                                                    FLAGS_nn_match_ratio,
-						    FLAGS_best_percent,
-						    FLAGS_detector,
-						    FLAGS_draw,
-						    FLAGS_bayered,
-						    o_filename);
+    FeatureTracker feature_tracker(FLAGS_inlier_threshold,
+                                   FLAGS_nn_match_ratio,
+                                   FLAGS_best_percent,
+                                   FLAGS_detector,
+                                   FLAGS_draw,
+                                   FLAGS_bayered,
+                                   o_filename);
     DIR* dir = opendir(FLAGS_input.c_str());
     struct dirent* dentry = nullptr;
     stringstream path;
@@ -63,9 +63,10 @@ int main(int argc, char** argv) {
     std::sort(images_to_process.begin(), images_to_process.end(), alphabetical);
     for (auto image_name: images_to_process) {
         feature_tracker.AddImage(image_name);
-	if (FLAGS_draw && !cv::getWindowProperty("Display", cv::WND_PROP_VISIBLE)) {
-	  break;
-	}
+      if (FLAGS_draw &&
+          !cv::getWindowProperty("Display", cv::WND_PROP_VISIBLE)) {
+        break;
+      }
     }
     cv::destroyAllWindows();
     return 0;
