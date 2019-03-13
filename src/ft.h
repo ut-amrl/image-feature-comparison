@@ -5,7 +5,7 @@
 #include <unordered_map>
 #include <fstream>
 #include <utility>
-#include <string>>
+#include <string>
 #include <vector>
 
 #include <opencv2/core.hpp>

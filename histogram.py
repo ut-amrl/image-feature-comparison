@@ -5,14 +5,30 @@ import numpy as np
 import subprocess
 import threading
 import sys
+import optparse
+
+##### Arugment Parsing   #####
+
+parser = optparse.OptionParser()
+parser.add_option('--input', action="store", dest="input_path", help="The path to the directory containing test images.", default="data/test_images/")
+parser.add_option('--bayered', action="store", dest="bayered", help="Are the image bayered?", default=False)
+parser.add_option('--best-percent', '--bp', action="store", dest="best_percent", help="The best X percentage of matches to consider.", default=0.3)
+parser.add_option('--exec_path', action="store", dest="exec_path", help="The path to the executable for feature tracking.", default="./bin/feature_tracker")
+parser.add_option('--start_length', action="store", dest="start_length", help="The starting track length that should appear on the graph", default="2")
+parser.add_option('--output', action="store", dest="output_path", help="The path to the directory to output the graph and test result data.", default="output")
+parser.add_option('--regen', action="store", dest="regen", help="Is this the first time running the program / should we regenerate test result data?", default=False)
+parser.add_option('--max_length', action="store", dest="max_length", help="Maximum track length to consider.", default="10000000")
+options, args = parser.parse_args()
 
 ##### User set variables #####
 
-input_path = "data/jackal/"
-bayered = "true"
-best_percent = "0.3"
-output_base = ""
-ft_exec_path = "./bin/feature_tracker"
+input_path = options.input_path
+bayered = bool(options.bayered)
+best_percent = float(options.best_percent)
+output_base = options.output_path
+ft_exec_path = options.exec_path
+start_length = int(options.start_length)
+max_length = int(options.max_length)
 
 ##### End user variables #####
 
@@ -45,13 +61,7 @@ def regen():
   for t in threads:
       t.join()
 
-#Simplistic arguement checking.
-if len(sys.argv) >= 1:
-    output_base = sys.argv[1]
-else:
-    print("Defaulting to output_path: %s" % output_base)
-
-if len(sys.argv) > 2 and sys.argv[2] == "regen":
+if options.regen:
     print("Generating data!")
     regen()
 else:
@@ -66,17 +76,24 @@ for detector, color in zip(detectors, colors):
     raw_data = np.loadtxt(output_path, int)
     #Get the different track lengths, and their counts
     vals, counts = np.unique(raw_data, return_counts=True)
-    data = np.zeros(len(vals))
-    data_sum_total = vals.sum()
+    index_of_max = len(vals)
+    for i in range(0, len(vals)):
+        if vals[i] == max_length:
+            index_of_max = i
+            break
+    truncated_vals = list(filter(lambda x: x >= start_length and x <= max_length, vals))
+    truncated_counts = counts[len(counts) - len(truncated_vals):index_of_max + 1]
+    data = np.zeros(len(truncated_vals))
+    data_sum_total = truncated_counts.sum()
     data_sum_curr = 0;
     data_sum_curr = data_sum_total
     #Get the amount of each track length that are atleast some length.
     #Do this by subtracting those that are no longer that length from the total.
     for i in range(0, len(data)):
       data[i] = data_sum_curr / data_sum_total
-      data_sum_curr -= vals[i]
+      data_sum_curr -= truncated_counts[i]
     #Plot this line and make it colorful
-    line2 = plt.plot(vals, data, label=detector)
+    line2 = plt.plot(truncated_vals, data, label=detector)
     plt.setp(line2, color=color, linestyle='-')
     #Add a legend entry for this algorithm
     legend_handles.append(mpatches.Patch(color=color, label=detector))
