@@ -47,25 +47,30 @@ The program that does all the heavy lifting is feature_tracker.out, it is locate
 
 The flags in "main.cc" are the important ones that control how feature_tracker runs.
 
-Now this is useful for watching each algorithm, but the entire point of this repository is for a benchmark of these algorithms on the same dataset. To do that we will use the ```histogram.py``` script in the base directory of the project. First open the script using your favorite text editor to find the configuration variables at the top, labeled "User set variables". Here is an explanation of each one:
-
-```python
-input_path   # Path to directory containing image data.
-bayered      # Is data bayered? If unsure just set to the string false.
-best_percent # The feature tracking only considers the best X percent of matches. 0.3 (30%) or lower works well.
-output_base  # Default path to output the graph and test results, this is a folder and also the name of your graph.
-```
-
-To generate the graph:
+Now this is useful for watching each algorithm, but the entire point of this repository is for a benchmark of these algorithms on the same dataset. To do that we will use the ```histogram.py``` script in the base directory of the project. There are various arguments which are listed below, but can also be obtained by running ```./histogram.py --help```.
 
 ```
-./histogram.py <output_directory> regen
+--input <String>              The path to the directory containing test images (defaults to data/test_images).
+--bayered <Boolean>           Are the image bayered?
+--best-percent / --bp <Float> The best percentage of matches to consider for matching.
+--exec_path <String>          The path to the executable (defaults to ./bin/feature_tracker).
+--start_length <Int>          The starting track length that should appear on the graph.
+--output <String>             The path to the directory to output the graph and test result data (also the title of the graph).
+--regen <Boolean>             Is this the first time running the program / should we regenerate test result data?
+--max_length <Int>            Maximum track length to consider.
+--trim_less_than <Int>        Trim all tracks with less than this number of tracks.
+```
+
+To generate the graph (assumes the test data is in data/test_images):
+
+```
+./histogram.py --regen True
 ```
 
 The 'regen' argument tells the script to generate all the data for the graph, if left out the program will attempt to just make the graph from the provided data and will fail. Afterwards you can just run:
 
 ```
-./histogram.py <output_directory>
+./histogram.py
 ```
 
 For an additional example please read [examples/README.md](https://github.com/umass-amrl/image-feature-comparison/tree/master/examples).
