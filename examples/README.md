@@ -10,9 +10,9 @@
     ```bash
     tar -xvf outdoor_image_comparison_example.tar.gz
     ```
-1. Run the python script from the directory of the project:
+1. Run the python script from the directory of the project (trimming noise data):
     ```bash
-    ./histogram.py --regen True
+    ./histogram.py --start_length 10 --trim_less_than 10 --regen True
     ```
 
 You should end up with a graph like this:
