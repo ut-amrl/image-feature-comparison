@@ -17,7 +17,8 @@ parser.add_option('--exec_path', action="store", dest="exec_path", help="The pat
 parser.add_option('--start_length', action="store", dest="start_length", help="The starting track length that should appear on the graph", default="2")
 parser.add_option('--output', action="store", dest="output_path", help="The path to the directory to output the graph and test result data.", default="output")
 parser.add_option('--regen', action="store", dest="regen", help="Is this the first time running the program / should we regenerate test result data?", default=False)
-parser.add_option('--max_length', action="store", dest="max_length", help="Maximum track length to consider.", default="10000000")
+parser.add_option('--max_length', action="store", dest="max_length", help="Maximum track length to consider.", default="100000000")
+parser.add_option('--trim_less_than', action="store", dest="trim_less_than", help="Trim all matches with less than this count.", default="0")
 options, args = parser.parse_args()
 
 ##### User set variables #####
@@ -29,6 +30,7 @@ output_base = options.output_path
 ft_exec_path = options.exec_path
 start_length = int(options.start_length)
 max_length = int(options.max_length)
+trim_length = int(options.trim_less_than)
 
 ##### End user variables #####
 
@@ -76,16 +78,27 @@ for detector, color in zip(detectors, colors):
     raw_data = np.loadtxt(output_path, int)
     #Get the different track lengths, and their counts
     vals, counts = np.unique(raw_data, return_counts=True)
+    if trim_length != 0:
+        i = 0
+        while i < len(vals):
+            if counts[i] < trim_length:
+                counts = np.delete(counts, i)
+                vals = np.delete(vals, i)
+                i -= 1
+            i += 1
+    # Find where in the vals the max element is.
+    # Default to the end of the array if the user didn't specify.
     index_of_max = len(vals)
     for i in range(0, len(vals)):
         if vals[i] == max_length:
             index_of_max = i
             break
+    # Truncate the values to only the ones the user requested.
     truncated_vals = list(filter(lambda x: x >= start_length and x <= max_length, vals))
-    truncated_counts = counts[len(counts) - len(truncated_vals):index_of_max + 1]
+    # Also truncate the counts
+    truncated_counts = counts[index_of_max - len(truncated_vals):index_of_max + 1]
     data = np.zeros(len(truncated_vals))
     data_sum_total = truncated_counts.sum()
-    data_sum_curr = 0;
     data_sum_curr = data_sum_total
     #Get the amount of each track length that are atleast some length.
     #Do this by subtracting those that are no longer that length from the total.
