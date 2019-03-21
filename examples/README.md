@@ -5,7 +5,7 @@
     mkdir data
     cd data
     ```
-1. Download the example dataset from here: https://drive.google.com/file/d/1EXNRWHJtd5h8mbiexAPw2dt1yLEDcOcJ/view?usp=sharing
+1. Download the example dataset from here: https://drive.google.com/open?id=1EXNRWHJtd5h8mbiexAPw2dt1yLEDcOcJ
 1. Uncompress the test dataset:
     ```bash
     tar -xvf outdoor_image_comparison_example.tar.gz
