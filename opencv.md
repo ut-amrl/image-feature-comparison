@@ -13,10 +13,10 @@
     mkdir build
     cd build
     ```
-1. Run cmake for opencv3 using the following command in the build directory.
+1. Make sure you are on the __3.2.0 branch__, then run cmake for opencv3 using the following command in the build directory.
    I found that the opencv_python3 failed a lot to build, you can turn it back on if you want.
     ```bash
-    cmake -DOPENCV_EXTRA_MODULES_PATH=../opencv_contrib/modules -DOPENCV_ENABLE_NONFREE=ON -DBUILD_opencv_xfeatures2d=ON -DBUILD_opencv_python3=OFF ..
+    cmake -DOPENCV_EXTRA_MODULES_PATH=../../opencv_contrib/modules -DOPENCV_ENABLE_NONFREE=ON -DBUILD_opencv_xfeatures2d=ON -DBUILD_opencv_python3=OFF ..
     ```
 1. Run make and make install
     ```bash
