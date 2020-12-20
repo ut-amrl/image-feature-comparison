@@ -85,7 +85,7 @@ FeatureTracker::FeatureTracker(double inlier_threshold,
     keypoint_finder = cv::FastFeatureDetector::create(10, true);
     matcher_params_ = cv::NORM_HAMMING;
   } else {
-    std::cerr << "Unrecognized Detector Option" << std::endl;
+    std::cerr << "Unrecognized Detector Option: " << detector_ << std::endl;
     exit(1);
   }
 }
@@ -195,8 +195,8 @@ void FeatureTracker::AddImage(const String &filename) {
                       cv::DrawMatchesFlags::NOT_DRAW_SINGLE_POINTS);
       cv::imshow("Display", temp);
       if (cv::waitKey(5) == 27) {
-      cv::destroyAllWindows();
-      exit(2);
+        cv::destroyAllWindows();
+        exit(2);
       }
     }
   }

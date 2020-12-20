@@ -23,7 +23,7 @@ A tool for comparing opencv keypoint and descriptor extractor algorithms ability
    ```bash
    apt-get install python-tk
    ```
-1. Opencv3 and Opencv_contrib, compiled from source. See [compiling Opencv](opencv.md) for detailed instructions.
+1. Opencv3 and Opencv_contrib, compiled from source. See [this archive](https://github.com/TheCynosure/opencv_3.2.0_archive) for detailed instructions.
 
 # Building the image-feature-comparison tool:
 

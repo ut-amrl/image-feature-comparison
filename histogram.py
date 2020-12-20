@@ -45,7 +45,7 @@ def ft_thread(detector, output_path):
     print("Running %s" % (detector))
     if input_path[-1] != '/':
         input_path += '/'
-    subprocess.run([ft_exec_path, "--input=%s" % (input_path), "--draw=false","--bayered=%s" % (bayered), "--output=%s" % (output_path), "--best_percent=%s" % (best_percent), "--detector=%s" % (detector)])
+    subprocess.run([ft_exec_path, "--input=%s" % (input_path), "--draw=false","--bayered=%s" % (bayered), "--output=%s" % (output_path), "--best_percent=%s" % (best_percent), "--detector=%s" % (detector.lower())])
     print("Finished %s" % (detector))
 
 #Generate the data by spawning a bunch of threads,
@@ -123,5 +123,6 @@ plt.ylabel('% At-Least')
 plt.legend(handles=legend_handles)
 plt.figure(1).savefig("%s/hist.png" % (output_base))
 plt.show()
+
 
 
