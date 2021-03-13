@@ -1,5 +1,5 @@
 # Image Feature Comparison
-A tool for comparing opencv keypoint and descriptor extractor algorithms ability to track features over a large number similar scene images.
+A tool for comparing opencv keypoint and descriptor extractor algorithms and their ability to track keypoints using brute force matching.
 
 # Requirements
 - Python3
